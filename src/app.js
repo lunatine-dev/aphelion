@@ -32,13 +32,13 @@ export default async (fastify, opts) => {
     const externalPlugins = path.join(__dirname, "plugins/external");
     const appPlugins = path.join(__dirname, "plugins/app");
 
-    if (folderExists(externalPlugins)) {
+    if (await folderExists(externalPlugins)) {
         await fastify.register(fastifyAutoload, {
             dir: externalPlugins,
             options: { ...opts },
         });
     }
-    if (folderExists(appPlugins)) {
+    if (await folderExists(appPlugins)) {
         await fastify.register(fastifyAutoload, {
             dir: appPlugins,
             options: { ...opts },
@@ -64,7 +64,7 @@ export default async (fastify, opts) => {
                     params: request.params,
                 },
             },
-            "Unhandled error occurred",
+            "Unhandled error occurred"
         );
         reply.code(err.statusCode ?? 500);
         let message = "Internal Server Error";
@@ -89,10 +89,10 @@ export default async (fastify, opts) => {
                         params: request.params,
                     },
                 },
-                "Resource not found",
+                "Resource not found"
             );
             reply.code(404);
             return { message: "Not Found" };
-        },
+        }
     );
 };
