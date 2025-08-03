@@ -35,10 +35,5 @@ services:
     cap_drop:
       - ALL
     user: "1000:1000"
-    networks:
-      - aphelion-net
-networks:
-  aphelion-net:
-    driver: bridge
 volumes:
   node_modules:

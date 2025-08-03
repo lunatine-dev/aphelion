@@ -1,9 +1,11 @@
 FROM node:22
 
 # Create group and user
-RUN groupadd -r aphelion && useradd -r -g aphelion aphelion
+RUN groupadd -r appuser && useradd -r -g appuser appuser
 
 WORKDIR /app
+
+RUN mkdir -p node_modules && chown appuser:appuser node_modules
 
 # Copy package files first to leverage cache
 COPY package*.json ./
@@ -12,9 +14,9 @@ COPY package*.json ./
 RUN npm install --omit=dev
 
 # Copy app source
-COPY --chown=aphelion:aphelion . .
+COPY --chown=appuser:appuser . .
 
 # Switch to non-root user
-USER aphelion
+USER appuser
 
 CMD ["npm", "run", "start"]
