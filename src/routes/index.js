@@ -4,6 +4,7 @@ export default async function (fastify) {
         return {
             message: "Pong!",
             timestamp: Date.now(),
+            rnd: Math.random(),
         };
     });
 }
