@@ -1,17 +1,20 @@
-# Use official Node.js image
 FROM node:22
 
-# Create app directory
+# Create group and user
+RUN addgroup -S aphelion && adduser -S aphelion -G aphelion
+
 WORKDIR /app
 
-# Copy only package files first to leverage Docker cache
+# Copy package files first to leverage cache
 COPY package*.json ./
 
-# Install dependencies
+# Install dependencies as root (default user)
 RUN npm install --omit=dev
 
-# Copy the rest of the app source
-COPY . .
+# Copy app source
+COPY --chown=aphelion:aphelion . .
 
-# Run the app
+# Switch to non-root user
+USER aphelion
+
 CMD ["npm", "run", "start"]

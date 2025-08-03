@@ -27,7 +27,7 @@ const init = async () => {
                 await mongoose.disconnect();
             }
             await app.close();
-        },
+        }
     );
 
     await app.ready();
