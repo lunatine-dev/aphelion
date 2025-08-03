@@ -1,7 +1,7 @@
 FROM node:22
 
 # Create group and user
-RUN addgroup -S aphelion && adduser -S aphelion -G aphelion
+RUN groupadd -r aphelion && useradd -r -g aphelion aphelion
 
 WORKDIR /app
 

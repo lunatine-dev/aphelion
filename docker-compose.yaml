@@ -21,7 +21,7 @@ services:
       - NODE_ENV=production
       - DOCKER_HOST=tcp://docker-proxy:2375
     ports:
-      - "${PORT}:${PORT}"
+      - "127.0.0.1:${PORT}:${PORT}"
     volumes:
       - .:/app:ro
       - .env:/app/.env:ro
@@ -37,3 +37,8 @@ services:
     user: "1000:1000"
     networks:
       - aphelion-net
+networks:
+  aphelion-net:
+    driver: bridge
+volumes:
+  node_modules:

@@ -39,6 +39,7 @@ const init = async () => {
         app.log.info("Connected to MongoDB");
 
         await app.listen({
+            host: "0.0.0.0",
             port: process.env.PORT ?? 3000,
         });
     } catch (err) {

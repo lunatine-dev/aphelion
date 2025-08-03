@@ -20,7 +20,8 @@
     "main": "src/server.js",
     "scripts": {
         "start": "node src/server.js",
-        "rebuild": "docker compose build --no-cache && docker compose up -d"
+        "rebuild": "docker compose build --no-cache && docker compose up -d",
+        "network": "docker network create aphelion-net"
     },
     "type": "module",
     "imports": {
