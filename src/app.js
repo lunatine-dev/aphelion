@@ -17,6 +17,7 @@ const schema = {
         "GITHUB_CLIENT_SECRET",
         "GITHUB_CALLBACK_URL",
         "GITHUB_OWNER_ID",
+        "DOCKER_API_PORT",
     ],
     properties: {
         RATE_LIMIT_MAX: {
