@@ -6,6 +6,7 @@ import serviceApp from "./app.js";
 import logger from "#constants/logger";
 
 import mongoose from "mongoose";
+import { loadSettings } from "#utils/settings";
 
 const app = Fastify({
     logger: logger[process.env.NODE_ENV || "development"] ?? true,
@@ -37,6 +38,8 @@ const init = async () => {
         await mongoose.connect(process.env.MONGO_URI);
         connected = true;
         app.log.info("Connected to MongoDB");
+
+        await loadSettings();
 
         await app.listen({
             host: "0.0.0.0",

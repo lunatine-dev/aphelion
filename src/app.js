@@ -13,6 +13,10 @@ const schema = {
         "JWT_SECRET",
         "START_OAUTH_PATH",
         "PORT",
+        "GITHUB_CLIENT_ID",
+        "GITHUB_CLIENT_SECRET",
+        "GITHUB_CALLBACK_URL",
+        "GITHUB_OWNER_ID",
     ],
     properties: {
         RATE_LIMIT_MAX: {
