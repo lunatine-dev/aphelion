@@ -6,7 +6,6 @@ services:
       dockerfile: Dockerfile
     environment:
       - NODE_ENV=production
-      - DOCKER_HOST=tcp://docker-proxy:2375
     ports:
       - "127.0.0.1:${PORT}:${PORT}"
     volumes:

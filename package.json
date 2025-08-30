@@ -23,7 +23,8 @@
     "scripts": {
         "start": "node src/server.js",
         "rebuild": "docker compose build --no-cache && docker compose up -d --remove-orphans",
-        "network": "docker network create aphelion-net"
+        "network": "docker network create aphelion-net",
+        "restart": "docker compose restart app"
     },
     "type": "module",
     "imports": {
