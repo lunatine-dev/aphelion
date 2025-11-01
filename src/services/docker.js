@@ -1,8 +1,14 @@
 import axios from "axios";
 
-const baseUrl = `http://127.0.0.1:${process.env.DOCKER_API_PORT}`;
+let baseUrl;
 
 export const jobs = {
+    init(port) {
+        baseUrl = `http://host.docker.internal:${port}`;
+    },
+    ping() {
+        return axios.get(`${baseUrl}/ping`);
+    },
     getJobs() {
         return axios.get(`${baseUrl}/jobs`);
     },

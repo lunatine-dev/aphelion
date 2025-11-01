@@ -1,6 +1,7 @@
 import fastifyAutoload from "@fastify/autoload";
 import env from "@fastify/env";
 import { folderExists } from "#utils/filesystem";
+import { jobs } from "#services/docker";
 
 import path from "path";
 const __dirname = import.meta.dirname;
@@ -36,6 +37,8 @@ export default async (fastify, opts) => {
     });
     const externalPlugins = path.join(__dirname, "plugins/external");
     const appPlugins = path.join(__dirname, "plugins/app");
+
+    jobs.init(process.env.DOCKER_API_PORT);
 
     if (await folderExists(externalPlugins)) {
         await fastify.register(fastifyAutoload, {
