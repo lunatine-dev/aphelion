@@ -12,7 +12,7 @@ export default async (fastify) => {
                 req
             );
 
-        const user = await getUser(token.accessToken);
+        const user = await getUser(token.access_token);
 
         if (process.env.GITHUB_OWNER_ID !== user.id.toString())
             return res.unauthorized("Invalid identifier");
@@ -31,8 +31,8 @@ export default async (fastify) => {
 
         await dbUser.save();
 
-        const ip = request.ip;
-        const userAgent = request.headers["user-agent"];
+        const ip = req.ip;
+        const userAgent = req.headers["user-agent"];
 
         const accessToken = issueAccessToken(dbUser, fastify);
         const refreshToken = await issueRefreshToken(dbUser._id, ip, userAgent);
@@ -44,11 +44,10 @@ export default async (fastify) => {
         });
 
         return res.redirect(
-            `${process.env.FRONTEND_URL}/callback?user=${tempCode}`
+            `${process.env.ORIGIN_SERVER}/callback?user=${tempCode}`
         );
     });
-
-    fastify.post("`/finalize", async (req, res) => {
+    fastify.post("/finalize", async (req, res) => {
         const { code } = req.body;
         if (!code) return res.badRequest("Missing code");
 
