@@ -23,6 +23,12 @@ export default async (fastify) => {
         return {
             refreshToken: newRefreshToken,
             accessToken,
+            user: {
+                name: user.name,
+                login: user.login,
+                avatar: user.avatar,
+                identifier: user.identifier,
+            },
         };
     });
 };
