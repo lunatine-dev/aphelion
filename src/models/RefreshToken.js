@@ -20,7 +20,7 @@ const RefreshTokenSchema = new Schema(
         replacedBy: { type: String },
         ip: { type: String },
         userAgent: { type: String },
-        lastUSedAt: { type: Date },
+        lastUsedAt: { type: Date },
         invalidated: { type: Boolean, defualt: false },
     },
     { versionKey: false }

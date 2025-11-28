@@ -16,7 +16,7 @@ const fetchRepo = async (req, res) => {
 };
 
 export default async (fastify) => {
-    fastify.get("/", { preHandler: fetchRepo }, async (req, res) => {
+    fastify.get("/", async (req, res) => {
         const repos = await Repo.find({
             setup: true,
         });
