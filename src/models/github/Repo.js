@@ -56,6 +56,27 @@ const schema = new mongoose.Schema(
         setup: Boolean,
         webhook: String,
         directory_exists: Boolean,
+        language: String,
+        archived: {
+            type: Boolean,
+            default: false,
+        },
+        is_template: {
+            type: Boolean,
+            default: false,
+        },
+        fork: {
+            type: Boolean,
+            default: false,
+        },
+        license: {
+            type: Boolean,
+            default: false,
+        },
+        license_type: {
+            type: String,
+            default: "",
+        },
     },
     {
         timestamps: true,

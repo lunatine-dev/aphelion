@@ -22,6 +22,22 @@ export default async (fastify) => {
             name,
         } = req.body;
 
+        let data;
+        // We'll get the extra information from an API call, this will confirm whether or not the repository even exists
+        try {
+            const resp = await octokit.request("GET /repos/{owner}/{repo}", {
+                owner,
+                repo,
+            });
+
+            data = resp.data;
+        } catch (err) {
+            return res.notFound();
+        }
+
+        if (!data.name)
+            return res.notFound("Could not find a repo with that information");
+
         const newRepo = new Repo({
             id,
             name: repo,
@@ -33,6 +49,12 @@ export default async (fastify) => {
             },
             env: "",
             setup: true,
+            language: data?.language,
+            archived: data?.archived,
+            is_template: data?.is_template,
+            fork: data?.fork,
+            license: !!data?.license,
+            license_type: data?.license ? data?.license?.spdx_id : "",
         });
 
         try {
