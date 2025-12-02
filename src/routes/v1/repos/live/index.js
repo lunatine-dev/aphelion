@@ -1,5 +1,7 @@
 import { octokit } from "#services/github";
 import { Repo } from "#models/github/Repo";
+import { RepoCloneLog } from "#models/github/RepoCloneLog";
+import { RepoDockerLog } from "#models/github/RepoDockerLog";
 
 const fetchRepo = async (req, res) => {
     const id = Number(req.params.id);
@@ -17,11 +19,9 @@ const fetchRepo = async (req, res) => {
 
 export default async (fastify) => {
     fastify.get("/", async (req, res) => {
-        const repos = await Repo.find({
+        return Repo.find({
             setup: true,
         });
-
-        return repos;
     });
 
     fastify.get("/:id", { preHandler: fetchRepo }, async (req, res) => {
@@ -64,21 +64,53 @@ export default async (fastify) => {
                         secret: process.env.GITHUB_HOOK_SECRET,
                         insecure_ssl: 0,
                     },
-                }
+                },
             );
 
             if (createHook.status !== 201)
                 return res.internalServerError("Failed to create webhook");
 
-            const id = createHook.data.id;
-
-            req.repo.webhook = id;
+            req.repo.webhook = createHook.data.id;
 
             await req.repo.save();
 
             return {
                 message: "Created webhook successfully",
+                webhook: createHook.data.id,
             };
-        }
+        },
     );
+
+    fastify.get("/:id/logs", { preHandler: fetchRepo }, async (req, res) => {
+        const [docker, clone] = await Promise.all([
+            RepoDockerLog.find({ repoId: req.repo.id }),
+            RepoCloneLog.find({ repoId: req.repo.id }),
+        ]);
+
+        return { docker, clone };
+    });
+
+    fastify.delete("/:id", { preHandler: fetchRepo }, async (req, res) => {
+        let repoId = req.repo.id;
+
+        // Check if webhook exists
+        if (req.repo?.webhook) {
+            try {
+                const { owner, name: repo, webhook: hook_id } = req.repo;
+
+                await octokit.request(
+                    "DELETE /repos/{owner}/{repo}/hooks/{hook_id}",
+                    { owner: owner.login, repo, hook_id },
+                );
+            } catch (e) {
+                console.error("webhook delete", e);
+            }
+        }
+
+        await Repo.deleteOne({ id: repoId });
+
+        return {
+            message: "Repository deleted successfully",
+        };
+    });
 };
