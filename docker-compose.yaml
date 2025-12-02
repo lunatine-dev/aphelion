@@ -16,6 +16,8 @@ services:
     cap_drop:
       - ALL
     user: "1000:1000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - aphelion-net
 networks:
