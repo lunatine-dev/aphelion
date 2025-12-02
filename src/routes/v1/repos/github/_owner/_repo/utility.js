@@ -1,5 +1,6 @@
 import { octokit } from "#services/github";
 
+const cache = new Map();
 const fileExists = async (owner, repo, path) => {
     if (!owner || !repo || !path) throw Error("Missing parameter");
 
@@ -19,6 +20,12 @@ export default async function (fastify) {
     fastify.get("/is_docker_app", async (req, res) => {
         try {
             const { owner, repo } = req.params;
+            const key = `${owner}/${repo}`;
+
+            const cached = cache.get(key);
+            if (cached && cached.expires > Date.now()) {
+                return cached.data;
+            }
 
             const dockerFileExists = await fileExists(
                 owner,
@@ -29,9 +36,16 @@ export default async function (fastify) {
                 (await fileExists(owner, repo, "docker-compose.yml")) ||
                 (await fileExists(owner, repo, "docker-compose.yaml"));
 
-            return {
+            const response = {
                 is_docker_app: dockerFileExists && composeFileExists,
             };
+
+            cache.set(key, {
+                data: response,
+                expires: Date.now() + 15 * 60 * 1000,
+            });
+
+            return response;
         } catch (e) {
             console.error(e);
             return {

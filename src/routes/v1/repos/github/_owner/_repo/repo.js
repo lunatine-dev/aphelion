@@ -1,14 +1,24 @@
 import { Repo } from "#models/github/Repo";
 import { octokit } from "#services/github";
 
+const cache = new Map();
+
 export default async (fastify) => {
     fastify.get("/", async (req, res) => {
         const { owner, repo } = req.params;
+        const key = `${owner}/${repo}`;
+
+        const cached = cache.get(key);
+        if (cached && cached.expires > Date.now()) {
+            return cached.data;
+        }
 
         const { data } = await octokit.request("GET /repos/{owner}/{repo}", {
             owner,
             repo,
         });
+
+        cache.set(key, { data, expires: Date.now() + 15 * 60 * 1000 });
 
         return data;
     });
@@ -60,11 +70,11 @@ export default async (fastify) => {
         try {
             const { data: hooks } = await octokit.request(
                 "GET /repos/{owner}/{repo}/hooks",
-                { owner, repo }
+                { owner, repo },
             );
 
             const hook = hooks.find(
-                (hook) => hook.config?.url === process.env.GITHUB_HOOK_URL
+                (hook) => hook.config?.url === process.env.GITHUB_HOOK_URL,
             );
 
             newRepo.webhook = hook ? hook.id : null;
