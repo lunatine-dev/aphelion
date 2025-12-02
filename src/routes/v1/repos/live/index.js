@@ -76,6 +76,7 @@ export default async (fastify) => {
 
             return {
                 message: "Created webhook successfully",
+                webhook: createHook.data.id,
             };
         },
     );
@@ -87,5 +88,29 @@ export default async (fastify) => {
         ]);
 
         return { docker, clone };
+    });
+
+    fastify.delete("/:id", { preHandler: fetchRepo }, async (req, res) => {
+        let repoId = req.repo.id;
+
+        // Check if webhook exists
+        if (req.repo?.webhook) {
+            try {
+                const { owner, name: repo, webhook: hook_id } = req.repo;
+
+                await octokit.request(
+                    "DELETE /repos/{owner}/{repo}/hooks/{hook_id}",
+                    { owner: owner.login, repo, hook_id },
+                );
+            } catch (e) {
+                console.error("webhook delete", e);
+            }
+        }
+
+        await Repo.deleteOne({ id: repoId });
+
+        return {
+            message: "Repository deleted successfully",
+        };
     });
 };
