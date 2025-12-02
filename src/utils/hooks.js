@@ -15,7 +15,7 @@ export const isAuthenticated = async (request, reply) => {
         return reply.code(401).send({ message: "Unauthorized" });
     }
 
-    if (user.identifier.toString() !== process.env.OWNER_ID) {
+    if (user.identifier.toString() !== process.env.GITHUB_OWNER_ID) {
         return reply.code(401).send({ message: "Unauthorized" });
     }
 

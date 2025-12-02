@@ -3,8 +3,8 @@ import { constants } from "fs";
 
 export const fileExists = async (path) => {
     try {
-        await access(path, constants.F_OK);
-        return true;
+        const stats = await stat(path);
+        return stats.isFile();
     } catch {
         return false;
     }

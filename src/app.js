@@ -77,6 +77,10 @@ export default async (fastify, opts) => {
         reply.code(err.statusCode ?? 500);
         let message = "Internal Server Error";
 
+        if (err.statusCode && err.statusCode < 500) {
+            message = err.message;
+        }
+
         return { message };
     });
 
