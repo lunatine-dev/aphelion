@@ -41,4 +41,7 @@ export const docker = {
     getContainers() {
         return axios.get(`${baseUrl}/docker/containers`);
     },
+    getContainer(repo_id) {
+        return axios.get(`${baseUrl}/docker/containers/github/${repo_id}`);
+    },
 };
