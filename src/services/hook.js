@@ -36,8 +36,8 @@ const appendLog = async (id, type, status, history = []) => {
         type === "clone"
             ? RepoCloneLog
             : type === "docker"
-            ? RepoDockerLog
-            : null;
+              ? RepoDockerLog
+              : null;
     if (!dbFunc) throw new Error("Invalid type");
 
     history = Array.isArray(history) ? history : [];
@@ -53,7 +53,7 @@ const appendLog = async (id, type, status, history = []) => {
         },
         {
             upsert: true,
-        }
+        },
     );
 };
 
@@ -87,7 +87,7 @@ export default async (req, res) => {
     try {
         const localRepoDir = path.join(
             process.env.GITHUB_SAVE_DIR,
-            repository.id.toString()
+            repository.id.toString(),
         );
         const env = await getEnvForRepo(repository.id, localRepoDir);
 
@@ -96,12 +96,12 @@ export default async (req, res) => {
         // Initiate a clone job (this is a smart job, it will pull if it already exists or clone if new)
         const cloneJobResponse = await createAndWait(
             { owner, repo, env },
-            "clone"
+            "clone",
         );
         // job will only resolve if it's successful or errored, so let's now run the docker job
         const dockerJobResponse = await createAndWait(
             { owner, repo },
-            "docker"
+            "docker",
         );
 
         // Both are successful,  {job}.history contains log history, so let's import this log history to our database so the frontend can see the status.
@@ -111,33 +111,29 @@ export default async (req, res) => {
                 repository.id,
                 "clone",
                 cloneJobResponse.error ? "error" : "success",
-                cloneJobResponse.history
+                cloneJobResponse.history,
             );
             await appendLog(
                 repository.id,
                 "docker",
                 dockerJobResponse.error ? "error" : "success",
-                dockerJobResponse.history
+                dockerJobResponse.history,
             );
         } catch (err) {
             console.error(
                 `Failed to append logs for repo ${repository.id}:`,
-                err
+                err,
             );
         }
 
         // Let's also let GitHub know we're done.
-        return res.json({
+        return {
             message: "Webhook complete",
             clone: cloneJobResponse.message,
             docker: dockerJobResponse.message,
-        });
+        };
     } catch (err) {
-        console.error(
-            "Webhook error for repo",
-            repository?.id,
-            err?.message ?? err
-        );
+        console.error("Webhook error for repo", repository?.id, err);
 
         return res.status(500).send({ message: "Internal server error" });
     }
