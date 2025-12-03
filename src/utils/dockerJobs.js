@@ -62,7 +62,7 @@ export const createAndWait = async (data, type) => {
         response = await jobs.create[type](
             owner,
             repo,
-            type === "clone" ? env : null
+            type === "clone" ? data.env : null,
         );
     } catch (err) {
         console.error(err);
